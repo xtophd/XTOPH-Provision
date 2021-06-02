@@ -1,2 +1,5 @@
-# LAB-Slammer
-Playbooks to help in the rapid deployment of a simple (home or rack) computer lab
+# XTOPH-Provision
+Playbooks that incorporate the xtoph_deploy ansible roles to provision systems.
+
+This serves as a simple example of how to utilize xtoph_deploy and as a functional set of tools to provision machines (baremetal, ovirt-vms and libvirt-vms).
+
