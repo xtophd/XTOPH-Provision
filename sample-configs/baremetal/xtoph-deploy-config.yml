@@ -11,11 +11,15 @@ xtoph_deploy_config:
 
   deployhost:
 
-    ##
-    ##     platform:      "ovirt" or "libvirt"
+    ## 
+    ##     Select 1 or more platforms to configure/support
+    ##     platform:      ovirt, libvirt, baremetal
     ##
 
-    platform: "ovirt"
+    platform: 
+      #- "ovirt"
+      #- "libvirt"
+      - "baremetal"
     
     ##
     ##    deployhost hostname OR ip that will
@@ -97,7 +101,8 @@ xtoph_deploy_config:
 
     network:
 
-      net0:
+      default:
+
         description:     "Primary interface"
         ovirt_network:   "ovirtmgmt"
 

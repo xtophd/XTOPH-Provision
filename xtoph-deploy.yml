@@ -24,7 +24,7 @@
 
 
 
-- hosts: myServers
+- hosts: myMachines
   gather_facts: no 
   roles:
     - role: xtoph_deploy
@@ -46,7 +46,7 @@
 
 
 
-- hosts: myServers
+- hosts: myMachines
   gather_facts: no
   roles:
 
@@ -60,9 +60,7 @@
 
 
 ##
-##     For the RHEL 8 Workshop, there are 
-##     no concurrency issues, so proceed 
-##     to deploy everything at once
+##     Deploy systems in batches of 'serial'
 ##
 ##     NOTE: for same reasons listed above
 ##           don't gather_facts 
@@ -75,9 +73,9 @@
 
 
 
-- hosts: myServers
+- hosts: myMachines
   gather_facts: no 
-  serial: 2 
+  serial: 3 
   roles:
     - role: xtoph_deploy
       vars: 
@@ -90,14 +88,19 @@
 
 ##
 ##    All nodes should be deployed
-##    So proceed to configure the workshop 
-## 
+##    So proceed to hook-in additional playbooks (ie: workshops)
+##
+##    NOTE: For this project, we just deploy and forget
+##          No post processing at this time, but this is 
+##          left to serve as an example
+##
 
 
 
-#- import_playbook: playbooks/rhel8-desktop.yml
+
+#- import_playbook: playbooks/rhel8-workshop.yml
 #  when: xtoph_deploy_cmd == "deploy" or 
 #        xtoph_deploy_cmd == "setup+" or 
 #        xtoph_deploy_cmd == "redeploy" or 
 #        xtoph_deploy_cmd == "workshop"
-#
+
