@@ -18,6 +18,36 @@ fi
 ##
 ##
 
+if [[ $2 != "" ]]; then
+
+    echo "Ansible limit set to: $2"
+
+    myLimits="-l $2"
+
+else
+
+    echo "This shell wrapper requires that an ansible limit be specified."
+    echo "If you want to deploy all hosts, use 'all' as your limit specifier"
+    echo ""
+    echo "Examples:"
+    echo "  ./xtoph_deploy.sh setup  all"
+    echo "  ./xtoph_deploy.sh deploy inventory-hostname"
+
+    if [[ $2 == "all" ]]; then
+
+      myLimits=""
+
+    else
+
+      exit
+
+    fi
+fi
+
+##
+##
+##
+
 case "$1" in
 
     "deploy"     | \
@@ -27,11 +57,11 @@ case "$1" in
     "setup+"     | \
     "setup")
 
-        time  ansible-playbook --ask-vault-pass -i ${myInventory} -f 10 -e xtoph_deploy_cmd=${1} xtoph-deploy.yml
+        time  ansible-playbook --ask-vault-pass -i ${myInventory} -f 10 -e xtoph_deploy_cmd=${1} ${myLimits} xtoph-deploy.yml 
         ;;
 
     *)
-        echo "USAGE: xtoph-deploy.sh [ setup | setup+ | deploy | undeploy | redeploy | workshop ]"
+        echo "USAGE: xtoph-deploy.sh [ setup | setup+ | deploy | undeploy | redeploy | workshop ] [ ansible-limit ]"
         echo ""
         echo "  setup     ... runs only 'setup' plays"
         echo "  setup+    ... runs both 'setup' and 'deploy' plays"
