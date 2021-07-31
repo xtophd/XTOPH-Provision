@@ -1,0 +1,133 @@
+##
+##    !! WARNING !!  Ansible only interprets 'True' and 'False'
+##                   as booleans when reading ini files.  Other
+##                   values such as 'true' or 'false' would be 
+##                   interpreted as strings and would break various
+##                   logic tests.  
+##
+##                   When reading YML files, booleans can take on
+##                   many forms and be interpreted correctly.
+##
+##                   For consistency, only use unquoted booleans: True & False
+
+all: 
+
+  vars:
+
+    ## ----------------------------------------
+    ##    Workshop Variables
+
+    workshop_vars:
+
+      clustername:          "xtoph"
+
+      network_basedomain:   "example.com"
+      network_network:      "192.168.1.0"
+      network_netmask:      "255.255.255.0"
+      network_broadcast:    "192.168.1.255"
+      network_prefix:       "24"
+      network_gateway:      "192.168.1.1"
+      network_nameserver:   "192.168.1.30"
+      network_timeserver:   "192.168.1.30"
+
+    workshop_extras:
+
+      network_fqdn:         "{{ workshop_vars.clustername }}.{{ workshop_vars.network_basedomain }}"
+
+
+    ## ----------------------------------------
+    ##    Xtoph Deploy Variables
+
+    xtoph_vars:
+
+      deployhost_ip:       "192.168.1.170" 
+      clustername:         "{{ workshop_vars.clustername }}"
+
+    ## ----------------------------------------
+    ##    Override default ansible host with
+    ##    one that includes fqdn.  This saves us
+    ##    from having to specify FQDN in host 
+    ##    vars section below.  This assumes all
+    ##    hosts are in the same domain. DUH!
+
+    ansible_host: "{{ inventory_hostname }}.{{ workshop_extras.network_fqdn }}"
+
+
+
+## ----------------------------------------
+## HOSTGROUPS & VARS
+## ----------------------------------------
+
+
+
+myDeployhost:
+  hosts:
+    deployer:
+      h_pubIP: "{{ xtoph_vars.deployhost_ip }}"
+  vars:
+    ansible_connection: local
+
+
+
+## -----------------
+
+
+
+##
+##    Default machine, resource and kickstart profiles to use
+##    Profiles are defined in roles/xtoph_deploy/vars/*
+##
+##    examples: h_ksPROF = [ rhel79-pxe | rhel79-bootimg | rhel79 | rhel84 ]
+##              h_hwPROF = [ generic_pc | kvm_vda | ovirt_sda | dell_r740 ]
+##              h_rsPROF = [ sml | med | lrg | bastion | sat6 ]
+##
+##    machine_profiles declare a default net and blk device, but
+##    sometimes changing the kickstart_profile (ie: rhel79 vs rhel84) will
+##    create a mismatch.  You can override the defaults with:
+##
+##        h_blkDEV="/dev/sda"
+##        h_netDEV="enp4s0"
+##
+##    these plays were originally built around VMs and VM platforms where
+##    after a provisioning event, VMs would power off.  This does not work
+##    will with baremetal nodes and can be overridden with:
+##
+##        h_pwrOFF="False"
+##
+
+
+
+myMachines:
+  hosts:
+
+    amanda1:
+      h_hwPROF:  "pc_nvme"
+      h_pubIP:   "192.168.1.23"  
+      h_pubMAC:  "04:d9:f5:21:88:55" 
+      h_rsPROF:  "med"
+      h_ksPROF:  "rhel84-pxe"
+      h_netDEV:  "enp5s0" 
+      h_blkDEV:  "nvme0n1"
+      h_pwrOFF:  "False" 
+
+    amanda2:
+      h_hwPROF:  "pc_nvme"
+      h_pubIP:   "192.168.1.24"  
+      h_pubMAC:  "3c:7c:3f:1c:9a:74" 
+      h_rsPROF:  "med"
+      h_ksPROF:  "rhel84-pxe"
+      h_netDEV:  "enp4s0" 
+      h_blkDEV:  "nvme0n1"
+      h_pwrOFF:  "False" 
+
+    esiso1:
+      h_hwPROF:  "supermicro_x9drd_if"
+      h_pubIP:   "192.168.1.25"
+      h_pubMAC:  "00:25:90:f0:80:e0"
+      h_rsPROF:  "bastion"
+      h_ksPROF:  "rhel84-pxe"
+      h_netDEV:  "enp5s0f0"
+      h_blkDEV:  "sda"
+      h_pwrOFF:  "False"
+      ipmi_fqdn: "esiso1_bmc.lab.linuxsoup.com"
+
