@@ -6,12 +6,43 @@
 
 
 - hosts: myDeployhost
-  roles:
-    - role: xtoph_deploy
+  tasks:
+
+    - debug: msg="**** BEGIN SETUP  ****"
+
+    - include_role:
+        name: xtoph_deploy
       vars: 
         xtoph_deploy_action: "setup"
       when: xtoph_deploy_cmd == "setup" or
             xtoph_deploy_cmd == "setup+"
+
+    - debug: msg="**** END SETUP  ****"
+
+
+
+##
+##    Second, for libvirt based platform hosts
+##    we need to install software, services and settings
+##    on the remote hosts (not on the deploy host)
+##
+
+
+
+- hosts: myLibvirtHosts
+  tasks:
+
+    - debug: msg="**** BEGIN SETUP LIBVIRT ****"
+
+    - include_role:
+        name: xtoph_deploy
+      vars:
+        xtoph_deploy_action: "setup-libvirt"
+      when: xtoph_deploy_cmd == "setup" or
+            xtoph_deploy_cmd == "setup+"
+
+    - debug: msg="**** END SETUP LIBVIRT ****"
+
 
 
 ##
@@ -26,12 +57,18 @@
 
 - hosts: myMachines
   gather_facts: no 
-  roles:
-    - role: xtoph_deploy
-      vars: 
+  tasks:
+
+    - debug: msg="**** BEGIN UNDEPLOY ****"
+
+    - include_role:
+        name: xtoph_deploy
+      vars:
         xtoph_deploy_action: "undeploy"
-      when: xtoph_deploy_cmd == "undeploy" or 
+      when: xtoph_deploy_cmd == "undeploy" or
             xtoph_deploy_cmd == "redeploy"
+
+    - debug: msg="**** END UNDEPLOY ****"
 
 
 
@@ -48,14 +85,19 @@
 
 - hosts: myMachines
   gather_facts: no
-  roles:
+  tasks:
 
-    - role: xtoph_deploy
+    - debug: msg="**** BEGIN PREPROCESS  ****"
+
+    - include_role:
+        name: xtoph_deploy
       vars:
         xtoph_deploy_action: "preprocess"
-      when: xtoph_deploy_cmd == "deploy" or 
+      when: xtoph_deploy_cmd == "deploy" or
             xtoph_deploy_cmd == "setup+" or
-            xtoph_deploy_cmd == "redeploy" 
+            xtoph_deploy_cmd == "redeploy"
+
+    - debug: msg="**** END PREPROCESS  ****"
 
 
 
@@ -76,13 +118,19 @@
 - hosts: myMachines
   gather_facts: no 
   serial: 3 
-  roles:
-    - role: xtoph_deploy
-      vars: 
+  tasks:
+
+    - debug: msg="**** BEGIN DEPLOY  ****"
+
+    - include_role:
+        name: xtoph_deploy
+      vars:
         xtoph_deploy_action: "deploy"
-      when: xtoph_deploy_cmd == "deploy" or 
-            xtoph_deploy_cmd == "setup+" or 
+      when: xtoph_deploy_cmd == "deploy" or
+            xtoph_deploy_cmd == "setup+" or
             xtoph_deploy_cmd == "redeploy"
+
+    - debug: msg="**** END DEPLOY  ****"
 
 
 
