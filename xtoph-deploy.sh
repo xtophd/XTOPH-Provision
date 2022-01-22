@@ -18,6 +18,18 @@ fi
 ##
 ##
 
+if [[ $1 == "git-updates" ]]; then
+
+    git pull
+    cd roles/xtoph_deploy; git pull
+    exit
+
+fi
+
+##
+##
+##
+
 if [[ $2 != "" ]]; then
 
     echo "Ansible limit set to: $2"
@@ -60,8 +72,9 @@ case "$1" in
         time  ansible-playbook --ask-vault-pass -i ${myInventory} -f 10 -e xtoph_deploy_cmd=${1} ${myLimits} xtoph-deploy.yml 
         ;;
 
+
     *)
-        echo "USAGE: xtoph-deploy.sh [ setup | setup+ | deploy | undeploy | redeploy | workshop ] [ ansible-limit ]"
+        echo "USAGE: xtoph-deploy.sh [ setup | setup+ | deploy | undeploy | redeploy | workshop | git-updates ] [ ansible-limit ]"
         echo ""
         echo "  setup     ... runs only 'setup' plays"
         echo "  setup+    ... runs both 'setup' and 'deploy' plays"
