@@ -72,6 +72,11 @@ case "$1" in
         time  ansible-playbook --ask-vault-pass -i ${myInventory} -f 10 -e xtoph_deploy_cmd=${1} ${myLimits} xtoph-deploy.yml 
         ;;
 
+    "git-updates")
+
+        git pull
+        cd roles/xtoph_deploy; git pull
+        ;;
 
     *)
         echo "USAGE: xtoph-deploy.sh [ setup | setup+ | deploy | undeploy | redeploy | workshop | git-updates ] [ ansible-limit ]"
