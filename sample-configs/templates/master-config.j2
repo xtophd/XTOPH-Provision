@@ -1,0 +1,186 @@
+##
+##    !! WARNING !!  Ansible only interprets 'True' and 'False'
+##                   as booleans when reading ini files.  Other
+##                   values such as 'true' or 'false' would be 
+##                   interpreted as strings and would break various
+##                   logic tests.  
+##
+##                   When reading YML files, booleans can take on
+##                   many forms and be interpreted correctly.
+##
+##                   For consistency, only use unquoted booleans: True & False
+
+all: 
+
+  vars:
+
+    ## ----------------------------------------
+    ##    Workshop Variables
+
+    workshop_vars:
+
+      projectname:          "{{ t_project_name }}"
+
+      artifacts_directory:   "/root/{{ t_project_name }}-artifacts"
+
+      network_basedomain:   "{{ t_network_basedomain }}"
+      network_network:      "{{ t_network_id }}"
+      network_netmask:      "{{ t_network_netmask }}"
+      network_broadcast:    "{{ t_network_broadcast }}"
+      network_prefix:       "{{ t_network_prefix }}"
+      network_gateway:      "{{ t_network_gateway }}"
+      network_nameserver:   "{{ t_network_dns_server }}"
+      network_timeserver:   "{{ t_network_time_server }}"
+
+      http_proxy:           ""
+      https_proxy:          ""
+
+    workshop_extras:
+
+      network_fqdn:         "{{ t_network_basedomain }}"
+
+
+    ## ----------------------------------------
+    ##    Xtoph Deploy Variables
+
+    xtoph_vars:
+
+      deployhost_ip:       "{{ t_ansible_ip }}" 
+      projectname:         "{{ t_project_name }}"
+      tmp_dir:             "/home/tmp/{{ t_project_name }}/{% raw %}{{ inventory_hostname_short }}{% endraw %}"
+
+
+
+
+## ----------------------------------------
+## HOSTGROUPS & VARS
+## ----------------------------------------
+
+myLibvirtHosts:
+
+  hosts:
+{% if t_virthost_type == "libvirt" and t_virthost_fqdn|length %}
+    {{ t_virthost_fqdn }}:
+      h_pubIP:  "{{ t_virthost_ip }}"
+      h_plPROF: "custom_kvmhost"
+{% if t_virthost_fqdn == "localhost.localdomain" %}
+      ansible_connection: local
+{% endif %}
+{% endif %}
+
+
+
+## -----------------
+
+myDeployhost:
+  hosts:
+    deployer:
+      h_pubIP:       {% raw %}"{{ xtoph_vars.deployhost_ip }}"{% endraw %}
+
+  vars:
+    ansible_connection: local
+
+
+
+## -----------------
+
+myMachines:
+  hosts:
+
+{% if t_addr_node1 is defined and t_addr_node1|length %}
+    {{ t_name_node1}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_node1 }}"
+{% if t_mac_node1|length %}
+      h_pubMAC:        "{{ t_mac_node1 }}"
+{% endif -%}
+{% if t_hw_node1|length  %}
+      h_hwPROF:        "{{ t_hw_node1  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "rhel84-bootiso"
+{% endif %}
+
+{% if t_bmc_node1|length %}
+      bmc_fqdn:        "{{ t_bmc_node1 }}"
+{% endif %}
+{% endif %}
+
+{% if t_addr_node2 is defined and t_addr_node2|length %}
+    {{ t_name_node2}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_node2 }}"
+{% if t_mac_node2|length %}
+      h_pubMAC:        "{{ t_mac_node2 }}"
+{% endif -%}
+{% if t_hw_node2|length  %}
+      h_hwPROF:        "{{ t_hw_node2  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "rhel84-bootiso"
+{% endif %}
+
+{% if t_bmc_node2|length %}
+      bmc_fqdn:        "{{ t_bmc_node2 }}"
+{% endif %}
+{% endif %}
+
+{% if t_addr_node3 is defined and t_addr_node3|length %}
+    {{ t_name_node3}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_node3 }}"
+{% if t_mac_node3|length %}
+      h_pubMAC:        "{{ t_mac_node3 }}"
+{% endif -%}
+{% if t_hw_node3|length  %}
+      h_hwPROF:        "{{ t_hw_node3  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "vmedia_nowait"
+{% endif %}
+
+{% if t_bmc_node3|length %}
+      bmc_fqdn:        "{{ t_bmc_node3 }}"
+{% endif %}
+{% endif %}
+
+{% if t_addr_node4 is defined and t_addr_node4|length %}
+    {{ t_name_node4}}.{{ t_network_basedomain}}:
+      h_pubIP:         "{{ t_addr_node4 }}"
+{% if t_mac_node4|length %}
+      h_pubMAC:        "{{ t_mac_node4 }}"
+{% endif -%}
+{% if t_hw_node4|length  %}
+      h_hwPROF:        "{{ t_hw_node4  }}"
+      h_plPROF:        "custom_baremetal"
+      h_pwrOFF:        false
+      h_ksPROF:        "vmedia_nowait"
+{% endif %}
+
+{% if t_bmc_node4|length %}
+      bmc_fqdn:        "{{ t_bmc_node4 }}"
+{% endif %}
+{% endif %}
+
+
+  vars: 
+{% if t_virthost_type == "libvirt" %}
+    h_hwPROF:        "kvm_vda"
+{% elif t_virthost_type == "ovirt" %}
+    h_hwPROF:        "ovirt_sda"
+{% endif %}
+    h_plPROF:        "custom_platform"
+    h_rsPROF:        "custom_medium"
+    h_ksPROF:        "rhel84-bootiso"
+
+
+
+## -----------------
+
+
+
+myShelter:
+  hosts:
+
+##
+##  If you list hosts hear, xtoph_deploy will ignore any
+##  automation plays
+##
+
