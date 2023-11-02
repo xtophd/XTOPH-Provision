@@ -87,6 +87,7 @@ myDeployhost:
 myMachines:
   hosts:
 
+
 {% if t_addr_node1 is defined and t_addr_node1|length %}
     {{ t_name_node1}}.{{ t_network_basedomain}}:
       h_pubIP:         "{{ t_addr_node1 }}"
@@ -97,9 +98,10 @@ myMachines:
       h_hwPROF:        "{{ t_hw_node1  }}"
       h_plPROF:        "custom_baremetal"
       h_pwrOFF:        false
-      h_ksPROF:        "rhel88-bootiso"
 {% endif %}
-
+{% if t_ks_node1|length  %}
+      h_ksPROF:        "{{ t_ks_node1 }}"
+{% endif %}
 {% if t_bmc_node1|length %}
       bmc_fqdn:        "{{ t_bmc_node1 }}"
 {% endif %}
@@ -115,9 +117,10 @@ myMachines:
       h_hwPROF:        "{{ t_hw_node2  }}"
       h_plPROF:        "custom_baremetal"
       h_pwrOFF:        false
-      h_ksPROF:        "rhel88-bootiso"
 {% endif %}
-
+{% if t_ks_node2|length  %}
+      h_ksPROF:        "{{ t_ks_node2 }}"
+{% endif %}
 {% if t_bmc_node2|length %}
       bmc_fqdn:        "{{ t_bmc_node2 }}"
 {% endif %}
@@ -133,9 +136,10 @@ myMachines:
       h_hwPROF:        "{{ t_hw_node3  }}"
       h_plPROF:        "custom_baremetal"
       h_pwrOFF:        false
-      h_ksPROF:        "vmedia_nowait"
 {% endif %}
-
+{% if t_ks_node3|length  %}
+      h_ksPROF:        "{{ t_ks_node3 }}"
+{% endif %}
 {% if t_bmc_node3|length %}
       bmc_fqdn:        "{{ t_bmc_node3 }}"
 {% endif %}
@@ -151,9 +155,10 @@ myMachines:
       h_hwPROF:        "{{ t_hw_node4  }}"
       h_plPROF:        "custom_baremetal"
       h_pwrOFF:        false
-      h_ksPROF:        "vmedia_nowait"
 {% endif %}
-
+{% if t_ks_node4|length  %}
+      h_ksPROF:        "{{ t_ks_node4 }}"
+{% endif %}
 {% if t_bmc_node4|length %}
       bmc_fqdn:        "{{ t_bmc_node4 }}"
 {% endif %}
@@ -168,7 +173,7 @@ myMachines:
 {% endif %}
     h_plPROF:        "custom_platform"
     h_rsPROF:        "custom_medium"
-    h_ksPROF:        "rhel84-bootiso"
+    h_ksPROF:        "rhel88-bootiso"
 
 
 

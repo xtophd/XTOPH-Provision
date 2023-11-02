@@ -50,6 +50,10 @@ export HW_NODE1=""
 export HW_NODE2=""
 export HW_NODE3=""
 export HW_NODE4=""
+export KS_NODE1=""
+export KS_NODE2=""
+export KS_NODE3=""
+export KS_NODE4=""
 export NAME_NODE1="node1"
 export NAME_NODE2="node2"
 export NAME_NODE3="node3"
@@ -122,25 +126,22 @@ BMC_NODE1="${BMC_NODE1}"
 BMC_NODE2="${BMC_NODE2}"
 BMC_NODE3="${BMC_NODE3}"
 BMC_NODE4="${BMC_NODE4}"
-BMC_WORKER2="${BMC_WORKER2}"
 MAC_NODE1="${MAC_NODE1}"
 MAC_NODE2="${MAC_NODE2}"
 MAC_NODE3="${MAC_NODE3}"
 MAC_NODE4="${MAC_NODE4}"
-MAC_WORKER2="${MAC_WORKER2}"
-MAC_SNO="${MAC_SNO}"
 HW_NODE1="${HW_NODE1}"
 HW_NODE2="${HW_NODE2}"
 HW_NODE3="${HW_NODE3}"
 HW_NODE4="${HW_NODE4}"
-HW_WORKER2="${HW_WORKER2}"
-HW_SNO="${HW_SNO}"
+KS_NODE1="${KS_NODE1}"
+KS_NODE2="${KS_NODE2}"
+KS_NODE3="${KS_NODE3}"
+KS_NODE4="${KS_NODE4}"
 NAME_NODE1="${NAME_NODE1}"
 NAME_NODE2="${NAME_NODE2}"
 NAME_NODE3="${NAME_NODE3}"
 NAME_NODE4="${NAME_NODE4}"
-NAME_WORKER2="${NAME_WORKER2}"
-NAME_SNO="${NAME_SNO}"
 EO_ANSWERS
 
 }
@@ -187,11 +188,11 @@ current_settings () {
         echo "Libvirt Net (dev/type)  ... ${VIRTHOST_BR_DEV} / ${VIRTHOST_BR_TYPE}" 
     fi
 
-    echo "NODE SETTINGS (ip/mac/hw/bmc/name)" 
-    echo "Node1  : ${ADDR_NODE1} / ${MAC_NODE1} / ${HW_NODE1} / ${BMC_NODE1} / ${NAME_NODE1}"
-    echo "Node2  : ${ADDR_NODE2} / ${MAC_NODE2} / ${HW_NODE2} / ${BMC_NODE2} / ${NAME_NODE2}"
-    echo "Node3  : ${ADDR_NODE3} / ${MAC_NODE3} / ${HW_NODE3} / ${BMC_NODE3} / ${NAME_NODE3}"
-    echo "Node4  : ${ADDR_NODE4} / ${MAC_NODE4} / ${HW_NODE4} / ${BMC_NODE4} / ${NAME_NODE4}"
+    echo "NODE SETTINGS (ip/mac/hw/ks/bmc/name)" 
+    echo "Node1  : ${ADDR_NODE1} / ${MAC_NODE1} / ${HW_NODE1} / ${KS_NODE1} / ${BMC_NODE1} / ${NAME_NODE1}"
+    echo "Node2  : ${ADDR_NODE2} / ${MAC_NODE2} / ${HW_NODE2} / ${KS_NODE2} / ${BMC_NODE2} / ${NAME_NODE2}"
+    echo "Node3  : ${ADDR_NODE3} / ${MAC_NODE3} / ${HW_NODE3} / ${KS_NODE3} / ${BMC_NODE3} / ${NAME_NODE3}"
+    echo "Node4  : ${ADDR_NODE4} / ${MAC_NODE4} / ${HW_NODE4} / ${KS_NODE4} / ${BMC_NODE4} / ${NAME_NODE4}"
     echo ""
  }
 
@@ -268,7 +269,7 @@ node_submenu () {
 
     current_settings
 
-    select action in "Set Name" "Set IP Address" "Set MAC Address" "Set Hardware" "Set BMC Address" "Set BMC Password" "Delete Node" "Back to Node Settings"
+    select action in "Set Name" "Set IP Address" "Set MAC Address" "Set Hardware" "Set KS Profile" "Set BMC Address" "Set BMC Password" "Delete Node" "Back to Node Settings"
     do
       case ${action}  in
         "Set Name")
@@ -289,6 +290,11 @@ node_submenu () {
         "Set MAC Address")
           MAGIC_VAR="MAC_$NODE"
           read -p "Enter MAC Address [${!MAGIC_VAR}]: " input
+          eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
+          ;;
+        "Set KS Profile")
+          MAGIC_VAR="KS_$NODE"
+          read -p "Enter Kickstart Profile [${!MAGIC_VAR}]: " input
           eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
           ;;
         "Set BMC Address")
