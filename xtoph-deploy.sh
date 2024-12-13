@@ -65,10 +65,17 @@ case "$1" in
         time  ansible-playbook --ask-vault-pass -i ${myInventory} -f 10 -e xtoph_deploy_cmd=${1} xtoph-deploy.yml 
         ;;
 
+    "setup+")
+
+        time  ansible-playbook --ask-vault-pass -i ${myInventory} -f 10 -e xtoph_deploy_cmd=${1} xtoph-deploy.yml 
+        ;;
+
+
     *)
         echo "USAGE: xtoph-deploy.sh [ setup | setup+ | deploy | undeploy | redeploy | workshop | git-updates ] [ ansible-limit ]"
         echo ""
         echo "  setup       ... runs only 'setup' plays"
+        echo "  setup+      ... runs only 'setup' followed by deploy plays"
         echo "  deploy      ... runs only 'deploy' plays"
         echo "  undeploy    ... runs only 'undeploy' plays"
         echo "  redeploy    ... runs both 'undeploy' and 'deploy' plays"

@@ -30,9 +30,27 @@
 
 
 - hosts: myLibvirtHosts
+  gather_facts: no
   tasks:
 
     - debug: msg="**** BEGIN SETUP LIBVIRT ****"
+
+    - include_role:
+        name: xtoph_deploy
+      vars:
+        xtoph_deploy_action: "preprocess"
+      when: xtoph_deploy_cmd == "setup" or
+            xtoph_deploy_cmd == "setup+"
+
+    - include_role:
+        name: xtoph_deploy
+      vars:
+        xtoph_deploy_action: "deploy"
+      when: xtoph_deploy_cmd == "setup" or
+            xtoph_deploy_cmd == "setup+"
+
+    - name:  "Gathering facts for libvirt host"
+      setup:
 
     - include_role:
         name: xtoph_deploy
