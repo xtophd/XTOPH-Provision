@@ -33,6 +33,10 @@
     vars:
       - t_rhsm_uid:                "{{ lookup('env','RHSM_UID') }}"
       - t_rhsm_pw:                 "{{ lookup('env','RHSM_PW') }}"
+      - t_workshop_user_uid:       "{{ lookup('env','WORKSHOP_USER_UID') }}"
+      - t_workshop_user_pw:        "{{ lookup('env','WORKSHOP_USER_PW') }}"
+      - t_workshop_admin_uid:      "{{ lookup('env','WORKSHOP_ADMIN_UID') }}"
+      - t_workshop_admin_pw:       "{{ lookup('env','WORKSHOP_ADMIN_PW') }}"
       - t_config_dir:              "{{ lookup('env','PWD') }}"
       - t_project_name:            "{{ lookup('env','PROJECT_NAME') }}"
       - t_ansible_ip:              "{{ lookup('env','ANSIBLE_IP') }}"

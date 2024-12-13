@@ -1,5 +1,10 @@
 #!/bin/bash
 
+export WORKSHOP_ROOT_PW=""
+export WORKSHOP_ADMIN_PW=""
+export WORKSHOP_ADMIN_UID="cloud-admin"
+export WORKSHOP_USER_PW=""
+export WORKSHOP_USER_UID="cloud-user"
 export RHSM_UID=""
 export RHSM_PW=""
 export PROJECT_NAME=""
@@ -102,6 +107,8 @@ save_settings () {
 cat > ./config/xtoph-deploy-setup.ans <<EO_ANSWERS
 ## Passwords are NEVER saved in this file
 PROJECT_NAME="${PROJECT_NAME}"
+WORKSHOP_ADMIN_UID="${WORKSHOP_ADMIN_UID}"
+WORKSHOP_USER_UID="${WORKSHOP_USER_UID}"
 RHSM_UID="${RHSM_UID}"
 ANSIBLE_SOURCE="${ANSIBLE_SOURCE}"
 ANSIBLE_IP="${ANSIBLE_IP}"
@@ -199,6 +206,8 @@ current_settings () {
     echo "[ SECURITY ]"
     echo "    Ansible Vault  ... NA/${ANSIBLE_VAULT_PW:+**********}"
     echo "    RHSM           ... ${RHSM_UID} / ${RHSM_PW:+**********}"
+    echo "    Workshop Admin ... ${WORKSHOP_ADMIN_UID} / ${WORKSHOP_ADMIN_PW:+**********}"
+    echo "    Workshop User  ... ${WORKSHOP_USER_UID} / ${WORKSHOP_USER_PW:+**********}"
 
     if [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "ovirt" ]]; then
         echo "    oVirt API      ... ${OVIRT_MANAGER_UID} / ${OVIRT_MANAGER_PW:+**********}"
@@ -486,7 +495,7 @@ vault_menu () {
 
     current_settings
 
-    select action in "Set Ansible Vault Password" "Set RHSM UID" "Set RHSM Password" "Set lVirt Password" "Set oVirt Password" "Set Default BMC UID" "Set Default BMC Password" "Back to Main Menu"
+    select action in "Set Ansible Vault Password" "Set RHSM" "Set Workshop Admin" "Set Workshop User" "Set lVirt Password" "Set oVirt Password" "Set Default BMC UID" "Set Default BMC Password" "Back to Main Menu"
     do
       case ${action}  in
 
@@ -505,12 +514,10 @@ vault_menu () {
           fi
           ;;
 
-        "Set RHSM UID")
+        "Set RHSM")
           read -p "Enter Red Hat Subscription Manager User ID [${RHSM_UID}]: " input
           RHSM_UID=${input:-$RHSM_UID}
-          ;;
 
-        "Set RHSM Password")
           echo "Enter new password and press Enter"
           read -s -p "Enter Red Hat Subscription Manager password [${RHSM_PW:+"**********"}]: " input
           echo ""
@@ -520,6 +527,42 @@ vault_menu () {
 
           if [[ "$input" == "$input2" ]]; then
             RHSM_PW=${input:-$RHSM_PW}
+          else
+            echo "WARNING: Passwords do not match ... unchanged"
+          fi
+          ;;
+
+        "Set Workshop Admin")
+          read -p "Enter Workshop Admin Username [${WORKSHOP_ADMIN_UID}]: " input
+          WORKSHOP_ADMIN_UID=${input:-$WORKSHOP_ADMIN_UID}
+
+          echo "Enter new password and press Enter"
+          read -s -p "Enter Workshop Admin password [${WORKSHOP_ADMIN_PW:+**********}]: " input
+          echo ""
+          read -s -p "Enter Workshop Admin password again [${WORKSHOP_ADMIN_PW:+**********}]: " input2
+          echo ""
+          echo ""
+
+          if [[ "$input" == "$input2" ]]; then
+            WORKSHOP_ADMIN_PW=${input:-$WORKSHOP_ADMIN_PW}
+          else
+            echo "WARNING: Passwords do not match ... unchanged"
+          fi
+          ;;
+
+        "Set Workshop User")
+          read -p "Enter Workshop User Username [${WORKSHOP_USER_UID}]: " input
+          WORKSHOP_USER_UID=${input:-$WORKSHOP_USER_UID}
+
+          echo "Enter new password and press Enter"
+          read -s -p "Enter Workshop User password [${WORKSHOP_USER_PW:+**********}]: " input
+          echo ""
+          read -s -p "Enter Workshop User password again [${WORKSHOP_USER_PW:+**********}]: " input2
+          echo ""
+          echo ""
+
+          if [[ "$input" == "$input2" ]]; then
+            WORKSHOP_USER_PW=${input:-$WORKSHOP_USER_PW}
           else
             echo "WARNING: Passwords do not match ... unchanged"
           fi
