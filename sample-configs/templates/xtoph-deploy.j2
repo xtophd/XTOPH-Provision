@@ -6,10 +6,11 @@ cleanup: true
 hostname: "{{ inventory_hostname }}"
 
 selected_profile:
-    kickstart: "{{ h_ksPROF | default ('') }}"
-    platform:  "{{ h_plPROF | default ('') }}"
-    resource:  "{{ h_rsPROF | default ('') }}"
-    machine:   "{{ h_hwPROF | default ('') }}"
+    kickstart:       "{{ h_ksPROF  | default ('') }}"
+    platform:        "{{ h_plPROF  | default ('') }}"
+    platform_setup:  "{{ h_plSETUP | default ('') }}"
+    resource:        "{{ h_rsPROF  | default ('') }}"
+    machine:         "{{ h_hwPROF  | default ('') }}"
 {% endraw %}
 
 deployhost:
