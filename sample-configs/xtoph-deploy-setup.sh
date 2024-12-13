@@ -6,13 +6,22 @@ export PROJECT_NAME=""
 export ANSIBLE_SOURCE=""
 export ANSIBLE_IP=""
 export ANSIBLE_VAULT_PW=""
-export VIRTHOST_UID="root"
 export VIRTHOST_IP=""
+export VIRTHOST_MAC=""
+export VIRTHOST_UID="root"
 export VIRTHOST_PW=""
 export VIRTHOST_FQDN=""
-export VIRTHOST_TYPE=""
+export VIRTHOST_TYPE="none"
+export VIRTHOST_VTAP_DEV=""
+export VIRTHOST_VTAP_VID=""
 export VIRTHOST_BR_TYPE=""
 export VIRTHOST_BR_DEV=""
+export VIRTHOST_HW=""
+export VIRTHOST_KS="rhel94-pxe"
+export VIRTHOST_BMC=""
+export VIRTHOST_BMC_UID=""
+export VIRTHOST_BMC_PW=""
+export VIRTHOST_MACHINE="kvm_vda"
 export OVIRT_MANAGER_UID="admin@internal"
 export OVIRT_MANAGER_IP=""
 export OVIRT_MANAGER_FQDN=""
@@ -20,6 +29,7 @@ export OVIRT_MANAGER_PW=""
 export OVIRT_DATACENTER=""
 export OVIRT_STORAGE_DOMAIN=""
 export OVIRT_NETWORK_DOMAIN=""
+export OVIRT_MACHINE=""
 export NETWORK_ID=""
 export NETWORK_GATEWAY=""
 export NETWORK_PREFIX=""
@@ -32,6 +42,10 @@ export ADDR_NODE1=""
 export ADDR_NODE2=""
 export ADDR_NODE3=""
 export ADDR_NODE4=""
+export NICMODE_NODE1="dhcp"
+export NICMODE_NODE2="dhcp"
+export NICMODE_NODE3="dhcp"
+export NICMODE_NODE4="dhcp"
 export BMC_NODE1=""
 export BMC_NODE2=""
 export BMC_NODE3=""
@@ -54,6 +68,10 @@ export KS_NODE1=""
 export KS_NODE2=""
 export KS_NODE3=""
 export KS_NODE4=""
+export RES_NODE1=""
+export RES_NODE2=""
+export RES_NODE3=""
+export RES_NODE4=""
 export NAME_NODE1="node1"
 export NAME_NODE2="node2"
 export NAME_NODE3="node3"
@@ -100,21 +118,30 @@ NETWORK_NETMASK="${NETWORK_NETMASK}"
 NETWORK_BASEDOMAIN="${NETWORK_BASEDOMAIN}"
 NETWORK_DNS_SERVER="${NETWORK_DNS_SERVER}"
 NETWORK_TIME_SERVER="${NETWORK_TIME_SERVER}" 
-VIRTHOST_UID="${VIRTHOST_UID}"
 VIRTHOST_IP="${VIRTHOST_IP}"
+VIRTHOST_MAC="${VIRTHOST_MAC}"
 VIRTHOST_FQDN="${VIRTHOST_FQDN}"
+VIRTHOST_UID="${VIRTHOST_UID}"
 VIRTHOST_TYPE="${VIRTHOST_TYPE}"
+VIRTHOST_VTAP_DEV="${VIRTHOST_VTAP_DEV}"
+VIRTHOST_VTAP_VID="${VIRTHOST_VTAP_VID}"
 VIRTHOST_BR_DEV="${VIRTHOST_BR_DEV}"
 VIRTHOST_BR_TYPE="${VIRTHOST_BR_TYPE}"
 VIRTHOST_DATACENTER="${VIRTHOST_DATACENTER}"
 VIRTHOST_STORAGE_DOMAIN="${VIRTHOST_STORAGE_DOMAIN}"
 VIRTHOST_NETWORK_DOMAIN="${VIRTHOST_NETWORK_DOMAIN}"
+VIRTHOST_HW="${VIRTHOST_HW}"
+VIRTHOST_KS="${VIRTHOST_KS}"
+VIRTHOST_BMC="${VIRTHOST_BMC}"
+VIRTHOST_BMC_UID="${VIRTHOST_BMC_UID}"
+VIRTHOST_MACHINE="${VIRTHOST_MACHINE}"
 OVIRT_MANAGER_UID="${OVIRT_MANAGER_UID}"
 OVIRT_MANAGER_IP="${OVIRT_MANAGER_IP}"
 OVIRT_MANAGER_FQDN="${OVIRT_MANAGER_FQDN}"
 OVIRT_DATACENTER="${OVIRT_DATACENTER}"
 OVIRT_STORAGE_DOMAIN="${OVIRT_STORAGE_DOMAIN}"
 OVIRT_NETWORK_DOMAIN="${OVIRT_NETWORK_DOMAIN}"
+OVIRT_MACHINE="${OVIRT_MACHINE}"
 ADDR_NODE1="${ADDR_NODE1}"
 ADDR_NODE2="${ADDR_NODE2}"
 ADDR_NODE3="${ADDR_NODE3}"
@@ -126,6 +153,10 @@ BMC_NODE1="${BMC_NODE1}"
 BMC_NODE2="${BMC_NODE2}"
 BMC_NODE3="${BMC_NODE3}"
 BMC_NODE4="${BMC_NODE4}"
+NICMODE_NODE1="dhcp"
+NICMODE_NODE2="dhcp"
+NICMODE_NODE3="dhcp"
+NICMODE_NODE4="dhcp"
 MAC_NODE1="${MAC_NODE1}"
 MAC_NODE2="${MAC_NODE2}"
 MAC_NODE3="${MAC_NODE3}"
@@ -162,37 +193,54 @@ current_settings () {
     ##
 
     echo ""
-    echo "Current Settings"
-    echo "----------------"
-    echo "Project Name         ... ${PROJECT_NAME}"
-    echo "Vault Ansible UID/PW ... n/a / ${ANSIBLE_VAULT_PW:+"**********"}" 
-    echo "Vault RHSM    UID/PW ... ${RHSM_UID} / ${RHSM_PW:+"**********"}" 
-    echo "Vault LibVirt UID/PW ... ${VIRTHOST_UID} / ${VIRTHOST_PW:+"**********"}" 
-    echo "Vault oVirt   UID/PW ... ${OVIRT_MANAGER_UID} / ${OVIRT_MANAGER_PW:+"**********"}" 
-    echo "Vault BMC     UID/PW ... ${BMC_UID_DEFAULT} / ${BMC_PW_DEFAULT:+"**********"}" 
+    echo "Project Name ... ${PROJECT_NAME}"
+    echo ""
 
-    echo "Ansible Source          ... ${ANSIBLE_SOURCE}"
-    echo "Ansible Control Host IP ... ${ANSIBLE_IP}"
-    echo "Network (id/pre/nm/bc)  ... ${NETWORK_ID} / ${NETWORK_PREFIX} / ${NETWORK_NETMASK} / ${NETWORK_BROADCAST}"
-    echo "Network Gateway         ... ${NETWORK_GATEWAY}"
-    echo "Network DNS Server      ... ${NETWORK_DNS_SERVER}"
-    echo "Network TIME Server     ... ${NETWORK_TIME_SERVER}" 
-    echo "Network Base Domain     ... ${NETWORK_BASEDOMAIN}"
+    echo "[ SECURITY ]"
+    echo "    Ansible Vault  ... NA/${ANSIBLE_VAULT_PW:+**********}"
+    echo "    RHSM           ... ${RHSM_UID} / ${RHSM_PW:+**********}"
 
-    echo "vHost Type              ... ${VIRTHOST_TYPE}"
     if [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "ovirt" ]]; then
-        echo "oVirt API (ip/fqdn)     ... ${OVIRT_MANAGER_IP} / ${OVIRT_MANAGER_FQDN}" 
-        echo "oVirt (dc/blk/net)      ... ${OVIRT_DATACENTER} / ${OVIRT_STORAGE_DOMAIN} / ${OVIRT_NETWORK_DOMAIN}" 
+        echo "    oVirt API      ... ${OVIRT_MANAGER_UID} / ${OVIRT_MANAGER_PW:+**********}"
     elif [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "libvirt" ]]; then
-        echo "Libvirt Host (ip/fqdn)  ... ${VIRTHOST_IP} / ${VIRTHOST_FQDN}" 
-        echo "Libvirt Net (dev/type)  ... ${VIRTHOST_BR_DEV} / ${VIRTHOST_BR_TYPE}" 
+        echo "    lVirt Host     ... ${VIRTHOST_UID} / ${VIRTHOST_PW:+**********}"
+        echo "    lVirt BMC      ... ${VIRTHOST_BMC_UID} / ${VIRTHOST_BMC_PW:+**********}"
     fi
 
-    echo "NODE SETTINGS (ip/mac/hw/ks/bmc/name)" 
-    echo "Node1  : ${ADDR_NODE1} / ${MAC_NODE1} / ${HW_NODE1} / ${KS_NODE1} / ${BMC_NODE1} / ${NAME_NODE1}"
-    echo "Node2  : ${ADDR_NODE2} / ${MAC_NODE2} / ${HW_NODE2} / ${KS_NODE2} / ${BMC_NODE2} / ${NAME_NODE2}"
-    echo "Node3  : ${ADDR_NODE3} / ${MAC_NODE3} / ${HW_NODE3} / ${KS_NODE3} / ${BMC_NODE3} / ${NAME_NODE3}"
-    echo "Node4  : ${ADDR_NODE4} / ${MAC_NODE4} / ${HW_NODE4} / ${KS_NODE4} / ${BMC_NODE4} / ${NAME_NODE4}"
+    echo "    BMC Default    ... ${BMC_UID_DEFAULT} / ${BMC_PW_DEFAULT:+**********}"
+
+    echo "[ ANSIBLE ]"
+    echo "    Source                ... ${ANSIBLE_SOURCE}"
+    echo "    Ctrl Host IP          ... ${ANSIBLE_IP}"
+
+    echo "[ NETWORK ]"
+    echo "    id/pre/nm/bc ... ${NETWORK_ID} / ${NETWORK_PREFIX} / ${NETWORK_NETMASK} / ${NETWORK_BROADCAST}"
+    echo "    gw/dns/time  ... ${NETWORK_GATEWAY} / ${NETWORK_DNS_SERVER} / ${NETWORK_TIME_SERVER}"
+    echo "    base domain  ... ${NETWORK_BASEDOMAIN}"
+
+    echo "[ VIRT HOST ]"
+        echo "    vHost Type                  ... ${VIRTHOST_TYPE}"
+    if [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "ovirt" ]]; then
+        echo "    oVirt API (ip/fqdn)         ... ${OVIRT_MANAGER_IP} / ${OVIRT_MANAGER_FQDN}"
+        echo "          Datacenter            ... ${OVIRT_DATACENTER}"
+        echo "          Storage Domain        ... ${OVIRT_STORAGE_DOMAIN}"
+        echo "          Network Domain        ... ${OVIRT_NETWORK_DOMAIN}"
+        echo "          VM machine            ... ${OVIRT_MACHINE}"
+    elif [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "libvirt" ]]; then
+        echo "    lVirt Host   (ip/mac/fqdn)  ... ${VIRTHOST_IP} / ${VIRTHOST_MAC} / ${VIRTHOST_FQDN}"
+        echo "                 (hw/ks)        ... ${VIRTHOST_HW} / ${VIRTHOST_KS}"
+        echo "          BRIDGE (type/dev)     ... ${VIRTHOST_MACHINE} / ${VIRTHOST_BR_TYPE} / ${VIRTHOST_BR_DEV}"
+        echo "          VTAP   (dev/vlan-id)  ... ${VIRTHOST_VTAP_DEV} / ${VIRTHOST_VTAP_VID}"
+        echo "          BMC    (ip/uid)       ... ${VIRTHOST_BMC} / ${VIRTHOST_BMC_UID}"
+        echo "          VM     (machine)      ... ${VIRTHOST_MACHINE}"
+    fi
+
+    echo "[NODE SETTINGS] (mode/ip/mac/hw/ks/resource/bmc/hostname)"
+
+    echo "Node1  : ${NICMODE_NODE1} / ${ADDR_NODE1} / ${MAC_NODE1} / ${HW_NODE1} / ${KS_NODE1} / ${RES_NODE1} / ${BMC_NODE1} / ${NAME_NODE1}"
+    echo "Node2  : ${NICMODE_NODE2} / ${ADDR_NODE2} / ${MAC_NODE2} / ${HW_NODE2} / ${KS_NODE2} / ${RES_NODE2} / ${BMC_NODE2} / ${NAME_NODE2}"
+    echo "Node3  : ${NICMODE_NODE3} / ${ADDR_NODE3} / ${MAC_NODE3} / ${HW_NODE3} / ${KS_NODE3} / ${RES_NODE3} / ${BMC_NODE3} / ${NAME_NODE3}"
+    echo "Node4  : ${NICMODE_NODE4} / ${ADDR_NODE4} / ${MAC_NODE4} / ${HW_NODE4} / ${KS_NODE4} / ${RES_NODE4} / ${BMC_NODE4} / ${NAME_NODE4}"
     echo ""
  }
 
@@ -269,7 +317,7 @@ node_submenu () {
 
     current_settings
 
-    select action in "Set Name" "Set IP Address" "Set MAC Address" "Set Hardware" "Set KS Profile" "Set BMC Address" "Set BMC Password" "Delete Node" "Back to Node Settings"
+    select action in "Set Name" "Set NIC Mode" "Set IP Address" "Set MAC Address" "Set Hardware" "Set Kickstart" "Set Resources" "Set BMC Address" "Set BMC Password" "Delete Node" "Back to Node Settings"
     do
       case ${action}  in
         "Set Name")
@@ -282,19 +330,38 @@ node_submenu () {
           read -p "Enter Hardware Profile [${!MAGIC_VAR}]: " input
           eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
           ;;
+        "Set Kickstart")
+          MAGIC_VAR="KS_$NODE"
+          read -p "Enter Kickstart Profile [${!MAGIC_VAR}]: " input
+          eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
+          ;;
+        "Set Resources")
+          MAGIC_VAR="RES_$NODE"
+          read -p "Enter Resource Profile [${!MAGIC_VAR}]: " input
+          eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
+          ;;
         "Set IP Address")
           MAGIC_VAR="ADDR_$NODE"
           read -p "Enter IP Address [${!MAGIC_VAR}]: " input
           eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
           ;;
+        "Set NIC Mode")
+          select NIC_MODE in "static" "dhcp"
+          do
+            case ${NIC_MODE} in
+              "static" | "dhcp" )
+                MAGIC_VAR="NICMODE_$NODE"
+                eval ${MAGIC_VAR}=${NIC_MODE}
+                break ;;
+              "*" )
+                 ;;
+             esac
+             REPLY=
+           done
+           ;;
         "Set MAC Address")
           MAGIC_VAR="MAC_$NODE"
           read -p "Enter MAC Address [${!MAGIC_VAR}]: " input
-          eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
-          ;;
-        "Set KS Profile")
-          MAGIC_VAR="KS_$NODE"
-          read -p "Enter Kickstart Profile [${!MAGIC_VAR}]: " input
           eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
           ;;
         "Set BMC Address")
@@ -302,12 +369,17 @@ node_submenu () {
           read -p "Enter BMC Address [${!MAGIC_VAR}]: " input
           eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
           ;;
+        "Set BMC UID")
+          MAGIC_VAR="BMC_UID_$NODE"
+          read -p "Enter BMC User ID [${!MAGIC_VAR}]: " input
+          eval ${MAGIC_VAR}=${input:-${!MAGIC_VAR}}
+          ;;
         "Set BMC Password")
           MAGIC_VAR="BMC_PW_$NODE"
           echo "Enter new password and press Enter"
-          read -s -p "Enter bmc password [${!MAGIC_VAR:+"**********"}]: " input
+          read -s -p "Enter bmc password [${!MAGIC_VAR:+**********}]: " input
           echo ""
-          read -s -p "Enter bmc password again [${!MAGIC_VAR:+"**********"}]: " input2
+          read -s -p "Enter bmc password again [${!MAGIC_VAR:+**********}]: " input2
           echo ""
 
           if [[ "$input" == "$input2" ]]; then
@@ -338,6 +410,7 @@ node_submenu () {
       ##
 
       current_settings
+
 
       ##
       ##    The following causes the select
@@ -413,7 +486,7 @@ vault_menu () {
 
     current_settings
 
-    select action in "Set Ansible Vault Password" "Set RHSM UID" "Set RHSM Password" "Set vHost Password" "Set oVirt Password" "Set Default BMC UID" "Set Default BMC Password" "Back to Main Menu"
+    select action in "Set Ansible Vault Password" "Set RHSM UID" "Set RHSM Password" "Set lVirt Password" "Set oVirt Password" "Set Default BMC UID" "Set Default BMC Password" "Back to Main Menu"
     do
       case ${action}  in
 
@@ -452,7 +525,7 @@ vault_menu () {
           fi
           ;;
 
-        "Set vHost Password")
+        "Set lVirt Password")
           echo "Enter new password and press Enter"
           read -s -p "Enter libvirt host password [${VIRTHOST_PW:+"**********"}]: " input
           echo ""
@@ -546,43 +619,73 @@ virthost_menu () {
     do
 
       if [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "ovirt" ]]; then
-        TYPE_ACTIONS=("Set Manager UID" "Set Manager IP" "Set Manager FQDN" "Set Datacenter" "Set Storage Domain" "Set Network Domain")
+        TYPE_ACTIONS=("Set Manager IP" "Set Manager FQDN" "Set Datacenter" "Set Storage Domain" "Set Network Domain" "Set VM Type" "Clear vHost Settings")
       elif [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "libvirt" ]]; then
-        TYPE_ACTIONS=("Set vHost UID" "Set vHost IP" "Set vHost FQDN" "Set Bridge Device" "Set Bridge Type")
+        TYPE_ACTIONS=("Set vHost IP" "Set vHost MAC" "Set vHost FQDN" "Set vHost User" "Set Bridge Device" "Set Bridge Type" "Set VTAP device" "Set VTAP vlan-id" "Set HW Type" "Set KS Profile" "Set BMC FQDN" "Set BMC User" "Set VM Type" "Clear vHost Settings")
       fi
 
-
-      select action in "Set vHost Type" "${TYPE_ACTIONS[@]}" "Delete vHost" "Back to Main Menu"
+      select action in "Set vHost Type" "${TYPE_ACTIONS[@]}" "Back to Main Menu"
       do
         case ${action}  in
-          "Set vHost UID")
-            read -p "Enter libvirt host User ID [${VIRTHOST_UID}]: " input
+
+          "Set vHost User")
+            read -p "Enter libvirt host hardware BMC User [${VIRTHOST_UID}]: " input
             VIRTHOST_UID=${input:-$VIRTHOST_UID}
             ;;
-  
+
+          "Set BMC User")
+            read -p "Enter libvirt host hardware BMC User [${VIRTHOST_BMC_UID}]: " input
+            VIRTHOST_BMC_UID=${input:-$VIRTHOST_BMC_UID}
+            ;;
+
+          "Set BMC FQDN")
+            read -p "Enter libvirt host hardware BMC FQDN or IP [${VIRTHOST_BMC}]: " input
+            VIRTHOST_BMC=${input:-$VIRTHOST_BMC}
+            ;;
+
+          "Set HW Type")
+            read -p "Enter libvirt host hardware type [${VIRTHOST_HW}]: " input
+            VIRTHOST_HW=${input:-$VIRTHOST_HW}
+            ;;
+
+          "Set KS Profile")
+            read -p "Enter libvirt host kickstart profile [${VIRTHOST_KS}]: " input
+            VIRTHOST_KS=${input:-$VIRTHOST_KS}
+            ;;
+
           "Set vHost IP")
             read -p "Enter libvirt host IP [${VIRTHOST_IP}]: " input
             VIRTHOST_IP=${input:-$VIRTHOST_IP}
             ;;
-  
+
+          "Set vHost MAC")
+            read -p "Enter libvirt host MAC [${VIRTHOST_MAC}]: " input
+            VIRTHOST_MAC=${input:-$VIRTHOST_MAC}
+            ;;
+
           "Set vHost FQDN")
             read -p "Enter libvirt host FQDN [${VIRTHOST_FQDN}]: " input
             VIRTHOST_FQDN=${input:-$VIRTHOST_FQDN}
             ;;
-  
+
           "Set vHost Type")
-            select VIRTHOST_TYPE in "libvirt" "ovirt"
+            SUB_PROMPT="${PS3}"
+            PS3="Select vHost Type: "
+            select VIRTHOST_TYPE in "libvirt" "ovirt" "none"
             do
               case ${VIRTHOST_TYPE} in
                 "libvirt" )
                   break ;;
                 "ovirt" )
                   break ;;
+                "none" )
+                  break ;;
                 "*" )
                    ;;
               esac
               REPLY=
             done
+            PS3="${SUB_PROMPT}"
 
             current_settings
             REPLY=
@@ -590,18 +693,30 @@ virthost_menu () {
             break
             ;;
 
-        "Set Bridge Device")
-          read -p "Enter libvirt host bridge device[${VIRTHOST_BR_DEV}]: " input
-          VIRTHOST_BR_DEV=${input:-$VIRTHOST_BR_DEV}
-          ;;
-  
+          "Set Bridge Device")
+            read -p "Enter libvirt host bridge device[${VIRTHOST_BR_DEV}]: " input
+            VIRTHOST_BR_DEV=${input:-$VIRTHOST_BR_DEV}
+            ;;
+
+          "Set VTAP device")
+            read -p "Enter libvirt host macvtap device[${VIRTHOST_VTAP_DEV}]: " input
+            VIRTHOST_VTAP_DEV=${input:-$VIRTHOST_VTAP_DEV}
+            ;;
+
+          "Set VTAP vlan-id") 
+            read -p "Enter libvirt host macvtap vlan-id${VIRTHOST_VTAP_VID}]: " input
+            VIRTHOST_VTAP_VID=${input:-$VIRTHOST_VTAP_VID}
+            ;;
+
           "Set Bridge Type")
-             select VIRTHOST_BR_TYPE in "bridge" "macvtap"
+             select VIRTHOST_BR_TYPE in "bridge" "macvtap" "nat"
              do
                 case ${VIRTHOST_BR_TYPE} in
                   "bridge" )
                     break ;;
                   "macvtap" )
+                    break ;;
+                  "nat" )
                     break ;;
                   "*" )
                     ;;
@@ -609,27 +724,27 @@ virthost_menu () {
                 REPLY=
               done
             ;;
-  
-          "Set Manager UID")
-            read -p "Enter oVirt Manager UID[${OVIRT_MANAGER_UID}]: " input
+
+          "Set Manager User")
+            read -p "Enter oVirt Manager User [${OVIRT_MANAGER_UID}]: " input
             OVIRT_MANAGER_UID=${input:-$OVIRT_MANAGER_UID}
             ;;
-  
+
           "Set Manager IP")
             read -p "Enter oVirt Manager IP[${OVIRT_MANAGER_IP}]: " input
             OVIRT_MANAGER_IP=${input:-$OVIRT_MANAGER_IP}
             ;;
-  
+
           "Set Manager FQDN")
             read -p "Enter oVirt Manager FQDN[${OVIRT_MANAGER_FQDN}]: " input
             OVIRT_MANAGER_FQDN=${input:-$OVIRT_MANAGER_FQDN}
             ;;
-  
+
           "Set Datacenter")
             read -p "Enter oVirt Datacenter[${OVIRT_DATACENTER}]: " input
             OVIRT_DATACENTER=${input:-$OVIRT_DATACENTER}
             ;;
-  
+
           "Set Network Domain")
             read -p "Enter oVirt Network Domain[${VIRTHOST_NETWORK_DOMAIN}]: " input
             OVIRT_NETWORK_DOMAIN=${input:-$OVIRT_NETWORK_DOMAIN}
@@ -639,52 +754,69 @@ virthost_menu () {
             read -p "Enter oVirt Storage Domain[${OVIRT_STORAGE_DOMAIN}]: " input
             OVIRT_STORAGE_DOMAIN=${input:-$OVIRT_STORAGE_DOMAIN}
             ;;
-  
-          "Delete vHost")
-            read -p "DELETE $NODE ... ARE YOU SURE (Y/N): " input
+
+          "Clear vHost Settings")
+            read -p "Clear vHost Settings ... ARE YOU SURE (Y/N): " input
             if [[ "$input" == "Y" ]]; then
               if [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "libvirt" ]]; then
                   VIRTHOST_IP=""
                   VIRTHOST_PW=""
                   VIRTHOST_FQDN=""
-                  VIRTHOST_TYPE=""
                   VIRTHOST_BR_TYPE=""
                   VIRTHOST_BR_DEV=""
+                  VIRTHOST_HW=""
+                  VIRTHOST_MACHINE=""
+                  VIRTHOST_BMC=""
+                  VIRTHOST_BMC_UID=""
+                  VIRTHOST_BMC_PW=""
               elif [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "ovirt" ]]; then
-                  OVIRT_IP=""
-                  OVIRT_API=""
-                  OVIRT_PW=""
+                  OVIRT_MANAGER_IP=""
+                  OVIRT_MANAGER_FQDN=""
+                  OVIRT_MANAGER_UID=""
+                  OVIRT_MANAGER_PW=""
                   OVIRT_DATACENTER=""
                   OVIRT_STORAGE_DOMAIN=""
                   OVIRT_NETWORK_DOMAIN=""
+                  OVIRT_MACHINE=""
+
               fi
             fi
             ;;
-  
+
+          "Set VM Type")
+            if [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "libvirt" ]]; then
+              read -p "Enter libVirt VM Type[${VIRTHOST_MACHINE}]: " input
+              VIRTHOST_MACHINE=${input:-$VIRTHOST_MACHINE}
+            elif [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "ovirt" ]]; then
+              read -p "Enter oVirt VM Type[${OVIRT_MACHINE}]: " input
+              OVIRT_MACHINE=${input:-$OVIRT_MACHINE}
+            fi
+            ;;
+
           "Back to Main Menu")
             PS3=${SAVED_PROMPT}
             break
             ;;
-  
+
           "*")
             echo "That's NOT an option, try again..."
             ;;
-  
+
         esac
-  
+
         ##
         ##    Reprint the current settings
         ##
-  
+
         current_settings
-  
+
         ##
         ##    The following causes the select
         ##    statement to reprint the menu
         ##
-  
+
         REPLY=
-  
+
       done
 
     done
@@ -770,7 +902,7 @@ ansible_menu() {
 
     SAVED_PROMPT="$PS3"
 
-    PS3="ANSIBLE SETTINGS (select node): "
+    PS3="ANSIBLE SETTINGS: "
 
     current_settings
 
