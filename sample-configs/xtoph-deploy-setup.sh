@@ -400,7 +400,7 @@ node_submenu () {
         "Delete Node")
           read -p "DELETE $NODE ... ARE YOU SURE (Y/N): " input
           if [[ "$input" == "Y" ]]; then
-            for MAGIC_VAR in HW_$NODE ADDR_$NODE MAC_$NODE BMC_$NODE BMC_PW_$NODE; do
+            for MAGIC_VAR in HW_$NODE ADDR_$NODE MAC_$NODE BMC_$NODE BMC_PW_$NODE KS_$NODE NAME_$NODE; do
               eval ${MAGIC_VAR}=""
             done
           fi
