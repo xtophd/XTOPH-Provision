@@ -238,7 +238,7 @@ current_settings () {
     elif [[ ! -z ${VIRTHOST_TYPE} && "${VIRTHOST_TYPE}" == "libvirt" ]]; then
         echo "    lVirt Host   (ip/mac/fqdn)  ... ${VIRTHOST_IP} / ${VIRTHOST_MAC} / ${VIRTHOST_FQDN}"
         echo "                 (hw/ks)        ... ${VIRTHOST_HW} / ${VIRTHOST_KS}"
-        echo "          BRIDGE (type/dev)     ... ${VIRTHOST_MACHINE} / ${VIRTHOST_BR_TYPE} / ${VIRTHOST_BR_DEV}"
+        echo "          BRIDGE (type/dev)     ... ${VIRTHOST_BR_TYPE} / ${VIRTHOST_BR_DEV}"
         echo "          VTAP   (dev/vlan-id)  ... ${VIRTHOST_VTAP_DEV} / ${VIRTHOST_VTAP_VID}"
         echo "          BMC    (ip/uid)       ... ${VIRTHOST_BMC} / ${VIRTHOST_BMC_UID}"
         echo "          VM     (machine)      ... ${VIRTHOST_MACHINE}"
