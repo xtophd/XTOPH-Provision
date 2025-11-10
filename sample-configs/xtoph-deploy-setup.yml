@@ -57,6 +57,7 @@
       - t_virthost_fqdn:           "{{ lookup('env','VIRTHOST_FQDN') }}"
       - t_virthost_hw:             "{{ lookup('env','VIRTHOST_HW') }}"
       - t_virthost_ks:             "{{ lookup('env','VIRTHOST_KS') }}"
+      - t_virthost_machine:        "{{ lookup('env','VIRTHOST_MACHINE') }}"
       - t_virthost_vtap_dev:       "{{ lookup('env','VIRTHOST_VTAP_DEV') }}"
       - t_virthost_vtap_vlan_id:   "{{ lookup('env','VIRTHOST_VTAP_VID') }}"
       - t_virthost_br_dev:         "{{ lookup('env','VIRTHOST_BR_DEV') }}"
