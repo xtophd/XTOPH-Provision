@@ -73,7 +73,7 @@
 
 
 
-- hosts: myMachines
+- hosts: myNodes
   gather_facts: no 
   tasks:
 
@@ -101,7 +101,7 @@
 
 
 
-- hosts: myMachines
+- hosts: myNodes
   gather_facts: no
   tasks:
 
@@ -133,7 +133,7 @@
 
 
 
-- hosts: myMachines
+- hosts: myNodes
   gather_facts: no 
   serial: 3 
   tasks:
