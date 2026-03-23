@@ -293,6 +293,7 @@ main_menu () {
                      "Ansible Settings" \
                      "Network Settings" \
                      "LDAP Settings" \
+                     "Bastion Settings" \
                      "Virt Host Settings" \
                      "Node Settings" \
                      "SAVE Current Params" \
@@ -314,6 +315,9 @@ main_menu () {
           ;;
         "LDAP Settings")
           ldap_menu
+          ;;
+        "Bastion Settings")
+          bastion_menu
           ;;
         "Virt Host Settings")
           virthost_menu
