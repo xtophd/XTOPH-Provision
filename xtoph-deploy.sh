@@ -21,7 +21,8 @@ fi
 if [[ "$1" == "git-updates" ]]; then
 
     git pull
-    cd roles/xtoph_deploy; git pull
+    ( cd ./roles/xtoph_deploy; git pull )
+    ( cd ./xtoph-setup; git pull )
     exit
 
 fi
