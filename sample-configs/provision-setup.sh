@@ -60,7 +60,7 @@ cat <<EOVARS
 
     PROJECT_NAME="${PROJECT_NAME}"
     WORKSHOP_ADMIN_UID="${WORKSHOP_ADMIN_UID}"
-    WORKSHOP_STUDENT_UID="${WORKSHOP_USER_UID}"
+    WORKSHOP_STUDENT_UID="${WORKSHOP_STUDENT_UID}"
     RHSM_UID="${RHSM_UID}"
 
     ##WORKSHOP_ADMIN_PW=""
@@ -87,9 +87,9 @@ general_settings () {
     echo ""
 
     echo "[ GENERAL ]"
-    echo "    RHSM           ... ${RHSM_UID} / ${RHSM_PW:+**********}"
-    echo "    Workshop Admin ... ${WORKSHOP_ADMIN_UID} / ${WORKSHOP_ADMIN_PW:+**********}"
-    echo "    Workshop User  ... ${WORKSHOP_STUDENT_UID} / ${WORKSHOP_STUDENT_PW:+**********}"
+    echo "    RHSM             ... ${RHSM_UID} / ${RHSM_PW:+**********}"
+    echo "    Workshop Admin   ... ${WORKSHOP_ADMIN_UID} / ${WORKSHOP_ADMIN_PW:+**********}"
+    echo "    Workshop User    ... ${WORKSHOP_STUDENT_UID} / ${WORKSHOP_STUDENT_PW:+**********}"
 
 }
 
